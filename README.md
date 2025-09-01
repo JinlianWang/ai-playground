@@ -1,12 +1,52 @@
-# React + Vite
+# Policy Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple React application with a count button built with Vite.
 
-Currently, two official plugins are available:
+## Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
+- Node.js (v18 or higher recommended)
+- npm
 
-## Expanding the ESLint configuration
+### Starting the Project
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+   Opens at `http://localhost:5173`
+
+### Available Commands
+
+```bash
+npm run dev      # Start development server with hot reload
+npm run build    # Build for production
+npm run preview  # Preview production build locally
+npm run lint     # Run ESLint for code quality
+```
+
+## Project Structure
+
+```
+src/
+  ├── App.jsx       # Main app component with count button
+  ├── main.jsx      # React entry point
+  └── assets/       # Static assets
+```
+
+## Tech Stack
+
+- **React** 19.1.1 - UI framework
+- **Vite** 7.1.2 - Build tool and dev server
+- **ESLint** - Code linting and formatting
+
+## Features
+
+- Simple count button that increments on click
+- Hot module replacement (HMR) for fast development
+- ESLint configured for code quality
