@@ -41,3 +41,6 @@ build
 
 # Coverage
 coverage
+
+# Claude Code settings
+settings.local.json
