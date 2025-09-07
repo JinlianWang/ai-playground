@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const Rating = ({ initialRating = 0, onRatingChange }) => {
   const [rating, setRating] = useState(initialRating)
   const [hoverRating, setHoverRating] = useState(0)
+
+  useEffect(() => {
+    setRating(initialRating)
+  }, [initialRating])
 
   const handleClick = (value) => {
     setRating(value)

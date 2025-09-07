@@ -4,7 +4,15 @@ import Rating from './Rating'
 
 function App() {
   const [count, setCount] = useState(0)
-  const [rating, setRating] = useState(0)
+
+  const handleCountChange = () => {
+    const newCount = count + 1
+    setCount(newCount)
+  }
+
+  const handleRatingChange = (newRating) => {
+    setCount(newRating)
+  }
 
   return (
     <Box 
@@ -29,15 +37,15 @@ function App() {
         <Button 
           variant="contained" 
           size="large"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={handleCountChange}
         >
           count is {count}
         </Button>
         <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
           <Typography variant="body2">Rate this app:</Typography>
           <Rating 
-            initialRating={rating}
-            onRatingChange={setRating}
+            initialRating={count}
+            onRatingChange={handleRatingChange}
           />
         </Box>
       </Box>
