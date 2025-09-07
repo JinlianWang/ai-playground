@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, Typography, Box } from '@mui/material'
 import Rating from './Rating'
+import NoteForm from './NoteForm'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -33,7 +34,8 @@ function App() {
       <Typography variant="h4" component="h1" gutterBottom>
         Policy Portal
       </Typography>
-      <Box display="flex" alignItems="center" gap={3}>
+      
+      <Box display="flex" alignItems="center" gap={3} mb={4}>
         <Button 
           variant="contained" 
           size="large"
@@ -49,6 +51,8 @@ function App() {
           />
         </Box>
       </Box>
+
+      <NoteForm />
     </Box>
   )
 }
