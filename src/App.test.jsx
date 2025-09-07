@@ -65,4 +65,32 @@ describe('App Component', () => {
     const firstStar = screen.getByLabelText('Rate 1 star')
     expect(firstStar).toHaveStyle('color: rgb(255, 215, 0)')
   })
+
+  it('renders NoteForm component', () => {
+    render(<App />)
+    
+    expect(screen.getByText('Create Note')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Enter note title')).toBeInTheDocument()
+    expect(screen.getByText('Category')).toBeInTheDocument()
+    expect(screen.getByText('Priority')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Enter note description')).toBeInTheDocument()
+  })
+
+  it('displays all main components together', () => {
+    render(<App />)
+    
+    // Check main title
+    expect(screen.getByText('Policy Portal')).toBeInTheDocument()
+    
+    // Check count button functionality
+    expect(screen.getByText(/count is 0/)).toBeInTheDocument()
+    
+    // Check rating stars
+    const stars = screen.getAllByLabelText(/Rate \d+ stars?/)
+    expect(stars).toHaveLength(5)
+    
+    // Check note form
+    expect(screen.getByText('Create Note')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
+  })
 })
