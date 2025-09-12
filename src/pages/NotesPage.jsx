@@ -15,9 +15,10 @@ function NotesPage() {
       left={0}
       gap={2}
       sx={{ 
-        py: 10,
+        py: 2,
+        paddingTop: '80px',
         backgroundColor: '#fff3e0',
-        zIndex: -1,
+        zIndex: 1,
         overflowY: 'auto'
       }}
     >

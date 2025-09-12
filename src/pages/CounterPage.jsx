@@ -23,7 +23,8 @@ function CounterPage() {
       gap={2}
       sx={{
         backgroundColor: '#f5f5f5',
-        zIndex: -1
+        zIndex: 1,
+        paddingTop: '64px'
       }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
