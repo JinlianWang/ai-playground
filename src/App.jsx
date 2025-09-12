@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Box } from '@mui/material'
 import Navigation from './Navigation'
@@ -6,8 +6,19 @@ import CounterPage from './pages/CounterPage'
 import RatingPage from './pages/RatingPage'
 import NotesPage from './pages/NotesPage'
 
+const STORAGE_KEY = 'policy-portal-count'
+
 function App() {
-  const [count, setCount] = useState(0)
+  // Initialize state from localStorage or default to 0
+  const [count, setCount] = useState(() => {
+    const savedCount = localStorage.getItem(STORAGE_KEY)
+    return savedCount ? parseInt(savedCount, 10) : 0
+  })
+
+  // Save to localStorage whenever count changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, count.toString())
+  }, [count])
 
   const handleCountChange = () => {
     const newCount = count + 1
