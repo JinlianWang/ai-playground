@@ -1,13 +1,6 @@
-import { useState } from 'react'
 import { Button, Typography, Box } from '@mui/material'
 
-function CounterPage() {
-  const [count, setCount] = useState(0)
-
-  const handleCountChange = () => {
-    const newCount = count + 1
-    setCount(newCount)
-  }
+function CounterPage({ count, onCountChange }) {
 
   return (
     <Box 
@@ -34,7 +27,7 @@ function CounterPage() {
       <Button 
         variant="contained" 
         size="large"
-        onClick={handleCountChange}
+        onClick={onCountChange}
       >
         count is {count}
       </Button>

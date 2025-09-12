@@ -1,13 +1,7 @@
-import { useState } from 'react'
 import { Typography, Box } from '@mui/material'
 import Rating from '../Rating'
 
-function RatingPage() {
-  const [rating, setRating] = useState(0)
-
-  const handleRatingChange = (newRating) => {
-    setRating(newRating)
-  }
+function RatingPage({ rating, onRatingChange }) {
 
   return (
     <Box 
@@ -35,7 +29,7 @@ function RatingPage() {
         <Typography variant="body1">Rate this app:</Typography>
         <Rating 
           initialRating={rating}
-          onRatingChange={handleRatingChange}
+          onRatingChange={onRatingChange}
         />
         {rating > 0 && (
           <Typography variant="body2" color="text.secondary">
