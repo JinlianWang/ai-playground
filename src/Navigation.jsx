@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material'
+import { AppBar, Toolbar, Typography, Box } from '@mui/material'
 
 function Navigation() {
   const pages = [
@@ -14,23 +14,30 @@ function Navigation() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Policy Portal
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          gap: 1,
+          '& .active': {
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            fontWeight: 'bold'
+          }
+        }}>
           {pages.map((page) => (
-            <Button
+            <NavLink
               key={page.path}
-              component={NavLink}
               to={page.path}
-              color="inherit"
-              sx={{
+              style={({ isActive }) => ({
+                color: 'inherit',
                 textDecoration: 'none',
-                '&.active': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: 1
-                }
-              }}
+                padding: '6px 16px',
+                borderRadius: '4px',
+                transition: 'background-color 0.3s ease',
+                backgroundColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                fontWeight: isActive ? 'bold' : 'normal'
+              })}
             >
               {page.label}
-            </Button>
+            </NavLink>
           ))}
         </Box>
       </Toolbar>
