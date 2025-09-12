@@ -15,8 +15,16 @@ function RatingPage() {
       flexDirection="column" 
       alignItems="center" 
       justifyContent="center" 
-      minHeight="calc(100vh - 100px)"
+      minHeight="100vh"
+      width="100vw"
+      position="fixed"
+      top={0}
+      left={0}
       gap={2}
+      sx={{
+        backgroundColor: '#e3f2fd',
+        zIndex: -1
+      }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
         Rating

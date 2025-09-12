@@ -7,10 +7,19 @@ function NotesPage() {
       display="flex" 
       flexDirection="column" 
       alignItems="center" 
-      justifyContent="center" 
-      minHeight="calc(100vh - 100px)"
+      justifyContent="flex-start" 
+      minHeight="100vh"
+      width="100vw"
+      position="fixed"
+      top={0}
+      left={0}
       gap={2}
-      sx={{ py: 2 }}
+      sx={{ 
+        py: 10,
+        backgroundColor: '#fff3e0',
+        zIndex: -1,
+        overflowY: 'auto'
+      }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
         Notes

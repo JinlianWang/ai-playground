@@ -8,7 +8,7 @@ import NotesPage from './pages/NotesPage'
 function App() {
   return (
     <Router>
-      <Box sx={{ minHeight: '100vh' }}>
+      <Box sx={{ position: 'relative', minHeight: '100vh' }}>
         <Navigation />
         <Routes>
           <Route path="/counter" element={<CounterPage />} />

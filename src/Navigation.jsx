@@ -9,7 +9,7 @@ function Navigation() {
   ]
 
   return (
-    <AppBar position="static" sx={{ mb: 2 }}>
+    <AppBar position="fixed" sx={{ zIndex: 1200 }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Policy Portal
