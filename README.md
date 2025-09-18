@@ -37,21 +37,21 @@ npm run test:run # Run tests once and exit
 ```
 src/
   ├── App.jsx              # Main app with routing and shared state
-  ├── App.test.jsx         # Test cases for App component
+  ├── App.test.jsx         # Integration tests for routing and state sync
   ├── main.jsx             # React entry point
-  ├── setupTests.js        # Test configuration and setup
-  ├── Navigation.jsx       # Navigation bar with React Router links
-  ├── Rating.jsx           # 5-star rating component
-  ├── NoteForm.jsx         # Note creation form
-  ├── TextInput.jsx        # Reusable text input component
-  ├── TextArea.jsx         # Reusable textarea component
-  ├── Dropdown.jsx         # Reusable dropdown component
-  ├── SubmitModal.jsx      # Modal for form submission
-  ├── Components.test.jsx  # Comprehensive component tests
-  ├── pages/
-  │   ├── CounterPage.jsx  # Counter button page
-  │   ├── RatingPage.jsx   # Rating component page
-  │   └── NotesPage.jsx    # Note-taking form page
+  ├── setupTests.js        # Test configuration and localStorage mocking
+  ├── components/          # Reusable components with co-located tests
+  │   ├── Navigation.jsx + Navigation.test.jsx
+  │   ├── Rating.jsx + Rating.test.jsx
+  │   ├── NoteForm.jsx + NoteForm.test.jsx
+  │   ├── TextInput.jsx + TextInput.test.jsx
+  │   ├── TextArea.jsx + TextArea.test.jsx
+  │   ├── Dropdown.jsx + Dropdown.test.jsx
+  │   └── SubmitModal.jsx + SubmitModal.test.jsx
+  ├── pages/               # Page components with co-located tests
+  │   ├── CounterPage.jsx + CounterPage.test.jsx
+  │   ├── RatingPage.jsx + RatingPage.test.jsx
+  │   └── NotesPage.jsx + NotesPage.test.jsx
   └── assets/              # Static assets
 ```
 
@@ -102,7 +102,13 @@ src/
 
 ## Testing
 
-The project includes a complete test setup using Vitest and React Testing Library:
+The project features a comprehensive test suite using Vitest and React Testing Library with **73 tests across 11 test files**.
+
+### Test Architecture
+- **Integration Tests** (`App.test.jsx`) - Router navigation, state synchronization, localStorage
+- **Component Tests** - Individual component functionality and user interactions
+- **Page Tests** - Page-specific behavior and prop handling
+- **Co-located Tests** - Each component has its test file in the same directory
 
 ### Running Tests
 ```bash
@@ -110,14 +116,29 @@ npm test         # Run tests in watch mode (re-runs on file changes)
 npm run test:run # Run tests once and exit
 ```
 
-### Test Cases
-- ✅ **App Component**: Renders button with initial count of 0
-- ✅ **Counter Functionality**: Increments count on button click
-- ✅ **Multi-click Handling**: Handles multiple consecutive clicks correctly
-- ✅ **Accessibility**: Verifies button accessibility and interactivity
-- ✅ **Form Components**: Tests text inputs, dropdowns, and textarea functionality
-- ✅ **Rating Component**: Tests star selection and hover interactions
-- ✅ **Modal Integration**: Tests form submission and modal display
+### Test Coverage Overview
+**Integration Tests:**
+- ✅ Routing and navigation between pages
+- ✅ Shared state synchronization across components
+- ✅ localStorage persistence and restoration
+
+**Component Tests:**
+- ✅ **Navigation**: Active link highlighting, proper routing
+- ✅ **Rating**: Star selection, click handling, accessibility
+- ✅ **NoteForm**: Form validation, modal integration, state management
+- ✅ **Form Components**: TextInput, TextArea, Dropdown functionality
+- ✅ **SubmitModal**: Modal display, button interactions
+
+**Page Tests:**
+- ✅ **CounterPage**: Button functionality, prop handling
+- ✅ **RatingPage**: Rating display, state integration
+- ✅ **NotesPage**: Form rendering, component integration
+
+### Test Best Practices
+- **Semantic Selectors**: Uses accessible roles and labels
+- **User-Centric Testing**: Focuses on user interactions over implementation
+- **Proper Mocking**: localStorage and external dependencies properly mocked
+- **Comprehensive Coverage**: Tests both happy paths and edge cases
 
 ## Usage
 
@@ -153,6 +174,11 @@ The application features three main pages accessible via the top navigation bar:
 - **Navigation**: NavLink components with active state management
 
 ### Component Structure
-- **Reusable Components**: Modular form inputs, rating, and modal components
-- **Page Components**: Dedicated components for each route
-- **Shared Navigation**: Consistent navigation across all pages
+- **Component Directory** (`/src/components/`): Reusable UI components with co-located tests
+  - Form components (TextInput, TextArea, Dropdown)
+  - Interactive components (Rating, SubmitModal)
+  - Layout components (Navigation)
+- **Page Directory** (`/src/pages/`): Route-specific page components with dedicated tests
+  - Each page handles specific functionality while sharing common state
+- **Test Co-location**: Each component paired with its test file for maintainability
+- **Separation of Concerns**: Clear distinction between reusable components and page-specific logic

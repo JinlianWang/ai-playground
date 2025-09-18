@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Box } from '@mui/material'
-import Navigation from './Navigation'
+import Navigation from './components/Navigation'
 import CounterPage from './pages/CounterPage'
 import RatingPage from './pages/RatingPage'
 import NotesPage from './pages/NotesPage'

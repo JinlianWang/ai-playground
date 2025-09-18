@@ -1,5 +1,5 @@
 import { Typography, Box } from '@mui/material'
-import Rating from '../Rating'
+import Rating from '../components/Rating'
 
 function RatingPage({ rating, onRatingChange }) {
 

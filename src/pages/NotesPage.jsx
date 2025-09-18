@@ -1,5 +1,5 @@
 import { Typography, Box } from '@mui/material'
-import NoteForm from '../NoteForm'
+import NoteForm from '../components/NoteForm'
 
 function NotesPage() {
   return (
