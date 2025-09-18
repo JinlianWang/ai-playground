@@ -72,3 +72,15 @@ When working with the counter or rating components, remember they share the same
 
 ### Page Layout
 All pages use fixed positioning to achieve full-screen experience. When adding new pages, follow the same pattern with proper z-index and padding for navigation clearance.
+
+## Git Best Practices
+
+### Frequent Commits
+- **Commit Early and Often**: Make small, focused commits after completing each logical unit of work
+- **Descriptive Messages**: Write clear commit messages that explain what was changed and why
+- **Atomic Commits**: Each commit should represent a single, complete change that doesn't break the application
+
+### Branch Management
+- **Stay on Main**: Work directly on the main branch unless explicitly asked to create a new branch
+- **No Automatic Branching**: Do not create new branches without explicit user request
+- **Clean History**: Keep commit history clean and meaningful for easier code review and debugging
