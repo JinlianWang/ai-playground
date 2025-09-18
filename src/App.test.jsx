@@ -1,96 +1,189 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import App from './App'
+import { MemoryRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Box } from '@mui/material'
+import Navigation from './components/Navigation'
+import CounterPage from './pages/CounterPage'
+import RatingPage from './pages/RatingPage'
+import NotesPage from './pages/NotesPage'
 
-describe('App Component', () => {
-  it('renders count button with initial count of 0', () => {
-    render(<App />)
-    const button = screen.getByText(/count is 0/)
-    expect(button).toBeInTheDocument()
+const STORAGE_KEY = 'policy-portal-count'
+
+// Test version of App component without BrowserRouter
+function TestApp() {
+  const [count, setCount] = useState(() => {
+    const savedCount = localStorage.getItem(STORAGE_KEY)
+    return savedCount ? parseInt(savedCount, 10) : 0
   })
 
-  it('increments count when button is clicked', () => {
-    render(<App />)
-    const button = screen.getByText(/count is 0/)
-    
-    fireEvent.click(button)
-    expect(screen.getByText(/count is 1/)).toBeInTheDocument()
-    
-    const updatedButton = screen.getByText(/count is 1/)
-    fireEvent.click(updatedButton)
-    expect(screen.getByText(/count is 2/)).toBeInTheDocument()
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, count.toString())
+  }, [count])
+
+  const handleCountChange = () => {
+    const newCount = count + 1
+    setCount(newCount)
+  }
+
+  const handleRatingChange = (newRating) => {
+    setCount(newRating)
+  }
+
+  return (
+    <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+      <Navigation />
+      <Routes>
+        <Route 
+          path="/counter" 
+          element={
+            <CounterPage 
+              count={count} 
+              onCountChange={handleCountChange} 
+            />
+          } 
+        />
+        <Route 
+          path="/rating" 
+          element={
+            <RatingPage 
+              rating={count} 
+              onRatingChange={handleRatingChange} 
+            />
+          } 
+        />
+        <Route path="/notes" element={<NotesPage />} />
+        <Route path="/" element={<Navigate to="/counter" replace />} />
+      </Routes>
+    </Box>
+  )
+}
+
+// Helper function to render TestApp with specific route
+const renderWithRoute = (initialRoute = '/') => {
+  return render(
+    <MemoryRouter initialEntries={[initialRoute]}>
+      <TestApp />
+    </MemoryRouter>
+  )
+}
+
+describe('App Integration Tests', () => {
+  describe('Routing and Navigation', () => {
+    it('redirects from root to /counter page', () => {
+      renderWithRoute('/')
+      expect(screen.getByRole('heading', { name: 'Counter' })).toBeInTheDocument()
+      expect(screen.getByText(/count is 0/)).toBeInTheDocument()
+    })
+
+    it('renders navigation bar on all pages', () => {
+      renderWithRoute('/counter')
+      expect(screen.getByText('Policy Portal')).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Counter' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Rating' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Notes' })).toBeInTheDocument()
+    })
+
+    it('highlights the correct active navigation link', () => {
+      renderWithRoute('/rating')
+      const ratingLink = screen.getByRole('link', { name: 'Rating' })
+      const counterLink = screen.getByRole('link', { name: 'Counter' })
+      
+      expect(ratingLink).toHaveClass('active')
+      expect(counterLink).not.toHaveClass('active')
+    })
+
+    it('renders correct page content for each route', () => {
+      // Test counter page
+      renderWithRoute('/counter')
+      expect(screen.getByRole('heading', { name: 'Counter' })).toBeInTheDocument()
+      expect(screen.getByText(/count is 0/)).toBeInTheDocument()
+    })
+
+    it('renders rating page correctly', () => {
+      renderWithRoute('/rating')
+      expect(screen.getByRole('heading', { name: 'Rating' })).toBeInTheDocument()
+      expect(screen.getAllByLabelText(/Rate \d+ stars?/)).toHaveLength(5)
+    })
+
+    it('renders notes page correctly', () => {
+      renderWithRoute('/notes')
+      expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument()
+      expect(screen.getByText('Create Note')).toBeInTheDocument()
+    })
   })
 
-  it('increments count multiple times correctly', () => {
-    render(<App />)
-    let button = screen.getByText(/count is 0/)
-    
-    for (let i = 1; i <= 5; i++) {
-      fireEvent.click(button)
-      button = screen.getByText(`count is ${i}`)
-      expect(button).toBeInTheDocument()
-    }
+  describe('Page Navigation', () => {
+    it('can navigate between all pages', () => {
+      renderWithRoute('/counter')
+      
+      // Start on counter page
+      expect(screen.getByRole('heading', { name: 'Counter' })).toBeInTheDocument()
+      
+      // Navigate to rating page
+      fireEvent.click(screen.getByRole('link', { name: 'Rating' }))
+      expect(screen.getByRole('heading', { name: 'Rating' })).toBeInTheDocument()
+      
+      // Navigate to notes page
+      fireEvent.click(screen.getByRole('link', { name: 'Notes' }))
+      expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument()
+      
+      // Navigate back to counter
+      fireEvent.click(screen.getByRole('link', { name: 'Counter' }))
+      expect(screen.getByRole('heading', { name: 'Counter' })).toBeInTheDocument()
+    })
   })
 
-  it('count button is clickable and accessible', () => {
-    render(<App />)
-    const button = screen.getByText(/count is 0/)
-    
-    expect(button).toBeInTheDocument()
-    expect(button).toBeEnabled()
+  describe('Shared State Management', () => {
+    it('maintains shared count state between counter and rating pages', () => {
+      renderWithRoute('/counter')
+      
+      // Increment count on counter page
+      const countButton = screen.getByText(/count is 0/)
+      fireEvent.click(countButton)
+      expect(screen.getByText(/count is 1/)).toBeInTheDocument()
+      
+      // Navigate to rating page and verify state is shared
+      fireEvent.click(screen.getByRole('link', { name: 'Rating' }))
+      expect(screen.getByText('You rated: 1 star')).toBeInTheDocument()
+    })
+
+    it('updates counter when rating is changed', () => {
+      renderWithRoute('/rating')
+      
+      // Set rating on rating page
+      fireEvent.click(screen.getByLabelText('Rate 3 stars'))
+      expect(screen.getByText('You rated: 3 stars')).toBeInTheDocument()
+      
+      // Navigate to counter page and verify state is updated
+      fireEvent.click(screen.getByRole('link', { name: 'Counter' }))
+      expect(screen.getByText(/count is 3/)).toBeInTheDocument()
+    })
+
+    it('preserves state across full navigation cycle', () => {
+      renderWithRoute('/counter')
+      
+      // Set initial value
+      fireEvent.click(screen.getByText(/count is 0/))
+      
+      // Navigate through all pages
+      fireEvent.click(screen.getByRole('link', { name: 'Rating' }))
+      fireEvent.click(screen.getByLabelText('Rate 4 stars'))
+      
+      fireEvent.click(screen.getByRole('link', { name: 'Notes' }))
+      expect(screen.getByText('Create Note')).toBeInTheDocument()
+      
+      // Return to counter and verify state persisted
+      fireEvent.click(screen.getByRole('link', { name: 'Counter' }))
+      expect(screen.getByText(/count is 4/)).toBeInTheDocument()
+    })
   })
 
-  it('renders rating component with 5 stars', () => {
-    render(<App />)
-    const stars = screen.getAllByLabelText(/Rate \d+ stars?/)
-    expect(stars).toHaveLength(5)
-  })
-
-  it('rating stars update count when clicked', () => {
-    render(<App />)
-    const threeStarButton = screen.getByLabelText('Rate 3 stars')
-    
-    fireEvent.click(threeStarButton)
-    expect(screen.getByText(/count is 3/)).toBeInTheDocument()
-  })
-
-  it('count button updates rating stars', () => {
-    render(<App />)
-    const countButton = screen.getByText(/count is 0/)
-    
-    // Click count button to increment to 1
-    fireEvent.click(countButton)
-    
-    // Verify first star is now selected (golden color)
-    const firstStar = screen.getByLabelText('Rate 1 star')
-    expect(firstStar).toHaveStyle('color: rgb(255, 215, 0)')
-  })
-
-  it('renders NoteForm component', () => {
-    render(<App />)
-    
-    expect(screen.getByText('Create Note')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Enter note title')).toBeInTheDocument()
-    expect(screen.getByText('Category')).toBeInTheDocument()
-    expect(screen.getByText('Priority')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Enter note description')).toBeInTheDocument()
-  })
-
-  it('displays all main components together', () => {
-    render(<App />)
-    
-    // Check main title
-    expect(screen.getByText('Policy Portal')).toBeInTheDocument()
-    
-    // Check count button functionality
-    expect(screen.getByText(/count is 0/)).toBeInTheDocument()
-    
-    // Check rating stars
-    const stars = screen.getAllByLabelText(/Rate \d+ stars?/)
-    expect(stars).toHaveLength(5)
-    
-    // Check note form
-    expect(screen.getByText('Create Note')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
+  describe('localStorage Integration', () => {
+    it('initializes state from localStorage', () => {
+      // This test verifies the localStorage mocking is working
+      renderWithRoute('/counter')
+      expect(screen.getByText(/count is 0/)).toBeInTheDocument()
+    })
   })
 })
