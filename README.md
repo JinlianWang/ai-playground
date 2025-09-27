@@ -36,10 +36,12 @@ npm run test:run # Run tests once and exit
 
 ```
 src/
-  ├── App.jsx              # Main app with routing and shared state
+  ├── App.jsx              # Main app with routing wrapped in count context
   ├── App.test.jsx         # Integration tests for routing and state sync
   ├── main.jsx             # React entry point
   ├── setupTests.js        # Test configuration and localStorage mocking
+  ├── context/             # Global contexts
+  │   └── CountContext.jsx # Count provider + hook with localStorage sync
   ├── components/          # Reusable components with co-located tests
   │   ├── Navigation.jsx + Navigation.test.jsx
   │   ├── Rating.jsx + Rating.test.jsx
@@ -79,7 +81,7 @@ src/
 - **Notes Page**: Comprehensive form with text inputs, dropdowns, and textarea
 
 ### 🔗 Synchronized State
-- **Shared state** between counter and rating components
+- **React Context** keeps counter and rating values in sync
 - **Cross-page synchronization** - changes reflect across all pages
 - **Bidirectional updates** - counter increments update rating, rating selections update counter
 
@@ -107,7 +109,7 @@ The project features a comprehensive test suite using Vitest and React Testing L
 ### Test Architecture
 - **Integration Tests** (`App.test.jsx`) - Router navigation, state synchronization, localStorage
 - **Component Tests** - Individual component functionality and user interactions
-- **Page Tests** - Page-specific behavior and prop handling
+- **Page Tests** - Page-specific behavior and shared context handling
 - **Co-located Tests** - Each component has its test file in the same directory
 
 ### Running Tests
@@ -130,8 +132,8 @@ npm run test:run # Run tests once and exit
 - ✅ **SubmitModal**: Modal display, button interactions
 
 **Page Tests:**
-- ✅ **CounterPage**: Button functionality, prop handling
-- ✅ **RatingPage**: Rating display, state integration
+- ✅ **CounterPage**: Button functionality, count context integration
+- ✅ **RatingPage**: Rating display, count context integration
 - ✅ **NotesPage**: Form rendering, component integration
 
 ### Test Best Practices
@@ -164,8 +166,8 @@ The application features three main pages accessible via the top navigation bar:
 ## Architecture
 
 ### State Management
-- **Lifted State**: Shared state managed at App component level
-- **Props Passing**: State and handlers passed down to page components
+- **React Context**: `CountProvider` centralizes shared state and handlers
+- **Custom Hook**: `useCount` exposes count value and update helpers to pages
 - **localStorage**: Automatic persistence layer for critical data
 
 ### Routing
