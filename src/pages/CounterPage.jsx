@@ -1,6 +1,8 @@
 import { Button, Typography, Box } from '@mui/material'
+import { useCount } from '../context/CountContext'
 
-function CounterPage({ count, onCountChange }) {
+function CounterPage() {
+  const { count, incrementCount } = useCount()
 
   return (
     <Box 
@@ -27,7 +29,7 @@ function CounterPage({ count, onCountChange }) {
       <Button 
         variant="contained" 
         size="large"
-        onClick={onCountChange}
+        onClick={incrementCount}
       >
         count is {count}
       </Button>

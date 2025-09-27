@@ -1,7 +1,9 @@
 import { Typography, Box } from '@mui/material'
 import Rating from '../components/Rating'
+import { useCount } from '../context/CountContext'
 
-function RatingPage({ rating, onRatingChange }) {
+function RatingPage() {
+  const { count, setCountFromRating } = useCount()
 
   return (
     <Box 
@@ -28,12 +30,12 @@ function RatingPage({ rating, onRatingChange }) {
       <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
         <Typography variant="body1">Rate this app:</Typography>
         <Rating 
-          initialRating={rating}
-          onRatingChange={onRatingChange}
+          initialRating={count}
+          onRatingChange={setCountFromRating}
         />
-        {rating > 0 && (
+        {count > 0 && (
           <Typography variant="body2" color="text.secondary">
-            You rated: {rating} star{rating !== 1 ? 's' : ''}
+            You rated: {count} star{count !== 1 ? 's' : ''}
           </Typography>
         )}
       </Box>

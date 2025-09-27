@@ -1,49 +1,55 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import CounterPage from './CounterPage'
+import { CountProvider } from '../context/CountContext'
+
+const renderWithProvider = (initialCount = 0) => {
+  return render(
+    <CountProvider initialCount={initialCount}>
+      <CounterPage />
+    </CountProvider>
+  )
+}
 
 describe('CounterPage', () => {
-  const mockOnCountChange = vi.fn()
-
   beforeEach(() => {
-    mockOnCountChange.mockClear()
+    localStorage.clear()
   })
 
   it('renders counter page with initial count', () => {
-    render(<CounterPage count={0} onCountChange={mockOnCountChange} />)
-    
+    renderWithProvider()
+
     expect(screen.getByRole('heading', { name: 'Counter' })).toBeInTheDocument()
     expect(screen.getByText(/count is 0/)).toBeInTheDocument()
   })
 
-  it('displays the correct count value', () => {
-    render(<CounterPage count={5} onCountChange={mockOnCountChange} />)
-    
+  it('displays the correct count value from context', () => {
+    renderWithProvider(5)
+
     expect(screen.getByText(/count is 5/)).toBeInTheDocument()
   })
 
-  it('calls onCountChange when button is clicked', () => {
-    render(<CounterPage count={0} onCountChange={mockOnCountChange} />)
-    
+  it('increments count when button is clicked', () => {
+    renderWithProvider(0)
+
     const button = screen.getByText(/count is 0/)
     fireEvent.click(button)
-    
-    expect(mockOnCountChange).toHaveBeenCalledTimes(1)
+
+    expect(screen.getByText(/count is 1/)).toBeInTheDocument()
   })
 
   it('count button is accessible', () => {
-    render(<CounterPage count={0} onCountChange={mockOnCountChange} />)
-    
-    const button = screen.getByText(/count is 0/)
+    renderWithProvider()
+
+    const button = screen.getByRole('button', { name: /count is 0/ })
     expect(button).toBeInTheDocument()
     expect(button).toBeEnabled()
     expect(button).toHaveAttribute('type', 'button')
   })
 
   it('renders with proper styling and layout', () => {
-    render(<CounterPage count={3} onCountChange={mockOnCountChange} />)
-    
-    // Check that main elements are present
+    renderWithProvider(3)
+
     expect(screen.getByRole('heading', { name: 'Counter' })).toBeInTheDocument()
     expect(screen.getByRole('button')).toBeInTheDocument()
   })
