@@ -1,37 +1,283 @@
 # Notes Microservice
 
-A Node.js microservice for managing notes with Express and SQLite.
+A Node.js microservice for managing notes with Express.js and SQLite database.
+
+## Features
+
+- ✅ Full CRUD operations (Create, Read, Update, Delete)
+- ✅ SQLite database with persistent storage
+- ✅ Input validation and error handling
+- ✅ CORS enabled for frontend integration
+- ✅ Automatic database initialization
+- ✅ Graceful shutdown handling
 
 ## Getting Started
 
+### Prerequisites
+- Node.js (v14 or higher)
+- npm
+
+### Installation & Setup
+
 ```bash
+# Navigate to the microservice directory
+cd notes-microservice
+
 # Install dependencies
 npm install
 
 # Start development server (with auto-reload)
 npm run dev
 
-# Start production server
+# OR start production server
 npm start
 ```
 
-## API Endpoints
+The microservice will start on **port 3001** and automatically:
+- Create the SQLite database file (`notes.db`) if it doesn't exist
+- Initialize the database schema
+- Be ready to accept API requests
 
-The microservice will expose the following endpoints:
+### Health Check
 
-- `POST /api/notes` - Create new note
-- `GET /api/notes` - Get all notes  
-- `GET /api/notes/:id` - Get specific note
-- `PUT /api/notes/:id` - Update note
-- `DELETE /api/notes/:id` - Delete note
+Visit `http://localhost:3001/health` to verify the service is running.
 
-## Note Schema
+## API Documentation
 
+Base URL: `http://localhost:3001`
+
+### Endpoints
+
+#### Get All Notes
+```http
+GET /api/notes
+```
+
+**Response:**
 ```json
 {
-  "title": "string (required)",
-  "category": "work|personal|ideas (required)",
-  "priority": "high|medium|low (required)", 
-  "description": "string (required)"
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Sample Note",
+      "category": "work",
+      "priority": "high", 
+      "description": "This is a sample note",
+      "created_at": "2025-09-28T12:00:00.000Z",
+      "updated_at": "2025-09-28T12:00:00.000Z"
+    }
+  ],
+  "count": 1
 }
 ```
+
+#### Get Specific Note
+```http
+GET /api/notes/:id
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Sample Note",
+    "category": "work",
+    "priority": "high",
+    "description": "This is a sample note",
+    "created_at": "2025-09-28T12:00:00.000Z", 
+    "updated_at": "2025-09-28T12:00:00.000Z"
+  }
+}
+```
+
+#### Create New Note
+```http
+POST /api/notes
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "title": "My New Note",
+  "category": "work",
+  "priority": "high",
+  "description": "Description of the note"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Note created successfully",
+  "data": {
+    "id": 2,
+    "title": "My New Note",
+    "category": "work", 
+    "priority": "high",
+    "description": "Description of the note",
+    "created_at": "2025-09-28T12:00:00.000Z",
+    "updated_at": "2025-09-28T12:00:00.000Z"
+  }
+}
+```
+
+#### Update Note
+```http
+PUT /api/notes/:id
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "title": "Updated Note Title",
+  "category": "personal",
+  "priority": "medium", 
+  "description": "Updated description"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Note updated successfully",
+  "data": {
+    "id": 2,
+    "title": "Updated Note Title",
+    "category": "personal",
+    "priority": "medium",
+    "description": "Updated description", 
+    "created_at": "2025-09-28T12:00:00.000Z",
+    "updated_at": "2025-09-28T12:05:00.000Z"
+  }
+}
+```
+
+#### Delete Note
+```http
+DELETE /api/notes/:id
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Note deleted successfully",
+  "data": {
+    "id": 2,
+    "title": "Deleted Note",
+    "category": "work",
+    "priority": "high",
+    "description": "This note was deleted",
+    "created_at": "2025-09-28T12:00:00.000Z",
+    "updated_at": "2025-09-28T12:00:00.000Z"
+  }
+}
+```
+
+### Field Validation
+
+All note operations require these fields:
+
+| Field | Type | Required | Valid Values |
+|-------|------|----------|-------------|
+| `title` | string | ✅ | Non-empty string |
+| `category` | string | ✅ | `work`, `personal`, `ideas` |
+| `priority` | string | ✅ | `high`, `medium`, `low` |
+| `description` | string | ✅ | Non-empty string |
+
+### Error Responses
+
+#### Validation Error (400)
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    "Title is required",
+    "Category must be one of: work, personal, ideas"
+  ]
+}
+```
+
+#### Not Found Error (404)
+```json
+{
+  "success": false,
+  "message": "Note not found"
+}
+```
+
+#### Server Error (500)
+```json
+{
+  "success": false,
+  "message": "Internal server error",
+  "error": "Database connection failed"
+}
+```
+
+## Testing Examples
+
+### Using curl
+
+```bash
+# Create a note
+curl -X POST http://localhost:3001/api/notes \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "My First Note",
+    "category": "work", 
+    "priority": "high",
+    "description": "This is my first note via API"
+  }'
+
+# Get all notes
+curl http://localhost:3001/api/notes
+
+# Get specific note
+curl http://localhost:3001/api/notes/1
+
+# Update a note
+curl -X PUT http://localhost:3001/api/notes/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Updated Note",
+    "category": "personal",
+    "priority": "medium", 
+    "description": "This note has been updated"
+  }'
+
+# Delete a note
+curl -X DELETE http://localhost:3001/api/notes/1
+```
+
+## Integration with Frontend
+
+This microservice is designed to work with the existing React frontend. The API endpoints support the same field structure as the `NoteForm` component:
+
+- `title` → Note title input
+- `category` → Category dropdown (work/personal/ideas)  
+- `priority` → Priority dropdown (high/medium/low)
+- `description` → Description textarea
+
+Simply update your frontend to make HTTP requests to `http://localhost:3001/api/notes` instead of showing the modal.
+
+## Database
+
+- **Engine:** SQLite
+- **File:** `notes.db` (created automatically)
+- **Schema:** Notes table with proper constraints and timestamps
+- **Backup:** The `notes.db` file contains all your data and can be backed up/restored
+
+## Development
+
+- **Hot Reload:** Use `npm run dev` with nodemon for automatic restarts during development
+- **Logs:** All database operations and errors are logged to console
+- **Graceful Shutdown:** Press Ctrl+C to properly close database connections
