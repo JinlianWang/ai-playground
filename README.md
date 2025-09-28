@@ -8,7 +8,36 @@ A multi-page React application featuring a counter, rating system, and note-taki
 - Node.js (v18 or higher recommended)
 - npm
 
-### Starting the Project
+### Starting the Complete Development Environment
+
+#### Option 1: Frontend + Backend (Recommended)
+
+1. **Install dependencies for both projects:**
+   ```bash
+   # Install frontend dependencies
+   npm install
+   
+   # Install backend dependencies
+   cd notes-microservice
+   npm install
+   cd ..
+   ```
+
+2. **Start both servers:**
+   ```bash
+   # Terminal 1: Start the backend API (Notes Microservice)
+   cd notes-microservice
+   npm start
+   # Backend runs at: http://localhost:3001
+   
+   # Terminal 2: Start the frontend (React App)
+   npm run dev
+   # Frontend runs at: http://localhost:5173
+   ```
+
+#### Option 2: Frontend Only
+
+If you only want to run the frontend without the notes API:
 
 1. **Install dependencies:**
    ```bash
@@ -55,10 +84,20 @@ src/
   │   ├── RatingPage.jsx + RatingPage.test.jsx
   │   └── NotesPage.jsx + NotesPage.test.jsx
   └── assets/              # Static assets
+
+notes-microservice/        # Backend API service
+  ├── server.js            # Express server with database initialization
+  ├── database.js          # SQLite database operations and schema
+  ├── routes/
+  │   └── notes.js         # Notes CRUD API endpoints
+  ├── package.json         # Backend dependencies
+  ├── notes.db             # SQLite database file (auto-created)
+  └── README.md            # Backend API documentation
 ```
 
 ## Tech Stack
 
+### Frontend
 - **React** 19.1.1 - UI framework
 - **React Router DOM** 7.9.0 - Client-side routing and navigation
 - **Material-UI** 7.3.2 - React component library for styling
@@ -66,6 +105,12 @@ src/
 - **ESLint** - Code linting and formatting
 - **Vitest** - Fast unit testing framework
 - **React Testing Library** - React component testing utilities
+
+### Backend (Notes Microservice)
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web framework for API endpoints
+- **SQLite** - Lightweight database for persistent storage
+- **CORS** - Cross-origin resource sharing for frontend integration
 
 ## Features
 
@@ -101,6 +146,21 @@ src/
 - **ESLint configured** for code quality
 - **Comprehensive test suite** with component and integration tests
 - **TypeScript-ready** with proper type checking
+
+### 🔌 Notes API Integration
+- **RESTful API** for persistent note storage
+- **CRUD Operations** - Create, Read, Update, Delete notes
+- **SQLite Database** - Lightweight, file-based persistence
+- **Input Validation** - Server-side validation matching UI requirements
+- **Error Handling** - Comprehensive error responses with proper HTTP status codes
+- **CORS Enabled** - Ready for frontend integration
+
+**API Endpoints:**
+- `GET /api/notes` - Retrieve all notes
+- `POST /api/notes` - Create new note
+- `GET /api/notes/:id` - Get specific note
+- `PUT /api/notes/:id` - Update existing note
+- `DELETE /api/notes/:id` - Delete note
 
 ## Testing
 
@@ -160,8 +220,9 @@ The application features three main pages accessible via the top navigation bar:
 ### Note Creation
 - Fill out the comprehensive form on the Notes page
 - Required fields: Title, Category, Priority, Description
-- Submit to see a confirmation modal
-- Form resets after successful submission
+- **With Backend**: Notes are saved to SQLite database via API
+- **Frontend Only**: Submit shows confirmation modal and resets form
+- Form validates all fields before submission
 
 ## Architecture
 
