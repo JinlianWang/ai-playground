@@ -9,7 +9,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:verbose": "jest --verbose"
+    "test:verbose": "jest --verbose",
+    "test:unit": "jest --testPathPattern=database",
+    "test:integration": "jest --testPathPattern=api",
+    "test:validation": "jest --testPathPattern=validation",
+    "test:ci": "jest --coverage --watchAll=false"
   },
   "keywords": [
     "notes",

@@ -42,6 +42,91 @@ The microservice will start on **port 3001** and automatically:
 
 Visit `http://localhost:3001/health` to verify the service is running.
 
+## Testing
+
+The microservice includes a comprehensive test suite with **107 tests** covering all functionality.
+
+### Running Tests
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode (re-runs on file changes)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests with verbose output
+npm run test:verbose
+
+# Run specific test categories
+npm run test:unit         # Database unit tests only
+npm run test:integration  # API integration tests only
+npm run test:validation   # Validation tests only
+
+# Run tests for CI/CD (no watch mode)
+npm run test:ci
+```
+
+### Test Structure
+
+The test suite is organized into several categories:
+
+#### 1. **Basic Setup Tests** (`tests/basic.test.js`)
+- Jest configuration verification
+- Test helpers and utilities
+
+#### 2. **Database Infrastructure Tests** (`tests/infrastructure.test.js`) 
+- Database setup and teardown
+- Basic CRUD operations
+- Test helper functionality
+
+#### 3. **Database Unit Tests** (`tests/database.test.js`)
+- All database operations (`getAllNotes`, `getNoteById`, `createNote`, `updateNote`, `deleteNote`)
+- Edge cases and data validation
+- Performance testing with large datasets
+
+#### 4. **Database Error Handling** (`tests/database.errors.test.js`)
+- SQL constraint violations
+- Connection error handling  
+- SQL injection protection
+- Concurrent operations
+- Memory and performance testing
+
+#### 5. **API Integration Tests** (`tests/api.test.js`)
+- All HTTP endpoints testing
+- Request/response validation
+- HTTP status codes
+- Error response formatting
+
+#### 6. **Validation Tests** (`tests/validation.test.js`)
+- Input validation for all fields
+- Content-Type handling
+- Security testing (XSS, SQL injection)
+- Unicode and special character support
+
+### Test Coverage
+
+The test suite provides comprehensive coverage of:
+- ✅ All API endpoints (GET, POST, PUT, DELETE)
+- ✅ All database operations
+- ✅ Input validation and error handling
+- ✅ Security and edge cases
+- ✅ Concurrent operations
+- ✅ Performance scenarios
+
+Run `npm run test:coverage` to see detailed coverage reports.
+
+### Testing Architecture
+
+- **Jest** - Testing framework with parallel execution
+- **Supertest** - HTTP endpoint testing
+- **In-Memory SQLite** - Fast, isolated database testing  
+- **Test Fixtures** - Reusable test data and scenarios
+- **Test Helpers** - Common utilities and assertions
+
 ## API Documentation
 
 Base URL: `http://localhost:3001`
