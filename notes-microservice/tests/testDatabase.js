@@ -169,8 +169,14 @@ const createTestDbOperations = (db) => {
 // Close test database
 const closeTestDatabase = (db) => {
   return new Promise((resolve) => {
+    // Check if database is already closed
+    if (!db || db.open === false) {
+      resolve();
+      return;
+    }
+    
     db.close((err) => {
-      if (err) {
+      if (err && err.code !== 'SQLITE_MISUSE') {
         console.error('Error closing test database:', err.message);
       }
       resolve();
