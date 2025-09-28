@@ -1,64 +1,156 @@
-import { useState } from 'react'
-import { Box, Button, Typography } from '@mui/material'
+import { useState, useEffect } from 'react'
+import { Box, Button, Typography, Alert, CircularProgress } from '@mui/material'
 import TextInput from './TextInput'
 import Dropdown from './Dropdown'
 import TextArea from './TextArea'
-import SubmitModal from './SubmitModal'
+import { createNote, updateNote, getNoteById, validateNoteData, NotesApiError, NOTE_CATEGORIES, NOTE_PRIORITIES } from '../services/notesApi'
 
-const NoteForm = () => {
+const NoteForm = ({ editingNoteId, onNoteSubmitted, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     category: '',
     priority: '',
     description: ''
   })
-  const [modalOpen, setModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [validationErrors, setValidationErrors] = useState([])
+  const [isLoadingNote, setIsLoadingNote] = useState(false)
 
-  const categoryOptions = [
-    { value: 'work', label: 'Work' },
-    { value: 'personal', label: 'Personal' },
-    { value: 'ideas', label: 'Ideas' }
-  ]
+  // Load note data if editing
+  useEffect(() => {
+    if (editingNoteId) {
+      loadNoteForEditing()
+    } else {
+      // Reset form for new note
+      setFormData({
+        title: '',
+        category: '',
+        priority: '',
+        description: ''
+      })
+    }
+  }, [editingNoteId])
 
-  const priorityOptions = [
-    { value: 'high', label: 'High' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'low', label: 'Low' }
-  ]
+  const loadNoteForEditing = async () => {
+    try {
+      setIsLoadingNote(true)
+      setError(null)
+      const note = await getNoteById(editingNoteId)
+      setFormData({
+        title: note.title,
+        category: note.category,
+        priority: note.priority,
+        description: note.description
+      })
+    } catch (err) {
+      setError(err instanceof NotesApiError ? err.message : 'Failed to load note for editing')
+    } finally {
+      setIsLoadingNote(false)
+    }
+  }
 
   const handleInputChange = (field) => (event) => {
     setFormData({
       ...formData,
       [field]: event.target.value
     })
+    // Clear validation errors when user starts typing
+    if (validationErrors.length > 0) {
+      setValidationErrors([])
+    }
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    setModalOpen(true)
+    
+    // Client-side validation
+    const errors = validateNoteData(formData)
+    if (errors.length > 0) {
+      setValidationErrors(errors)
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      setValidationErrors([])
+      
+      if (editingNoteId) {
+        await updateNote(editingNoteId, formData)
+      } else {
+        await createNote(formData)
+      }
+      
+      // Success - notify parent and reset form
+      if (onNoteSubmitted) {
+        onNoteSubmitted()
+      }
+      
+      // Reset form
+      setFormData({
+        title: '',
+        category: '',
+        priority: '',
+        description: ''
+      })
+    } catch (err) {
+      if (err instanceof NotesApiError) {
+        setError(err.message)
+      } else {
+        setError('Failed to save note. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleModalClose = () => {
-    setModalOpen(false)
-  }
-
-  const handleModalConfirm = () => {
-    setModalOpen(false)
-    alert('Done')
-    // Reset form
+  const handleCancel = () => {
     setFormData({
       title: '',
       category: '',
       priority: '',
       description: ''
     })
+    setError(null)
+    setValidationErrors([])
+    if (onCancel) {
+      onCancel()
+    }
+  }
+
+  if (isLoadingNote) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
+        <CircularProgress />
+      </Box>
+    )
   }
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', maxWidth: 500 }}>
       <Typography variant="h5" component="h2" gutterBottom>
-        Create Note
+        {editingNoteId ? 'Edit Note' : 'Create Note'}
       </Typography>
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
+      {validationErrors.length > 0 && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            Please fix the following errors:
+          </Typography>
+          <ul style={{ margin: 0, paddingLeft: 20 }}>
+            {validationErrors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </Alert>
+      )}
       
       <Box display="flex" flexDirection="column" gap={2}>
         <TextInput
@@ -67,22 +159,25 @@ const NoteForm = () => {
           onChange={handleInputChange('title')}
           placeholder="Enter note title"
           required
+          disabled={loading}
         />
         
         <Dropdown
           label="Category"
           value={formData.category}
           onChange={handleInputChange('category')}
-          options={categoryOptions}
+          options={NOTE_CATEGORIES}
           required
+          disabled={loading}
         />
         
         <Dropdown
           label="Priority"
           value={formData.priority}
           onChange={handleInputChange('priority')}
-          options={priorityOptions}
+          options={NOTE_PRIORITIES}
           required
+          disabled={loading}
         />
         
         <TextArea
@@ -92,24 +187,40 @@ const NoteForm = () => {
           placeholder="Enter note description"
           rows={4}
           required
+          disabled={loading}
         />
         
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          sx={{ mt: 2 }}
-        >
-          Submit
-        </Button>
+        <Box display="flex" gap={2} sx={{ mt: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={loading}
+            sx={{ flex: 1 }}
+          >
+            {loading ? (
+              <>
+                <CircularProgress size={20} sx={{ mr: 1 }} />
+                {editingNoteId ? 'Updating...' : 'Creating...'}
+              </>
+            ) : (
+              editingNoteId ? 'Update Note' : 'Create Note'
+            )}
+          </Button>
+          
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outlined"
+              size="large"
+              onClick={handleCancel}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+          )}
+        </Box>
       </Box>
-
-      <SubmitModal
-        open={modalOpen}
-        onClose={handleModalClose}
-        onConfirm={handleModalConfirm}
-        formData={formData}
-      />
     </Box>
   )
 }
