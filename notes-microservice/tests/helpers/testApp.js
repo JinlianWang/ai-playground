@@ -145,6 +145,15 @@ const createNotesRoutes = (dbOperations) => {
   // POST /api/notes - Create new note
   router.post('/', async (req, res) => {
     try {
+      // Handle empty or undefined body
+      if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: ['Request body is required and must be valid JSON']
+        });
+      }
+      
       // Validate input
       const validationErrors = validateNote(req.body);
       if (validationErrors.length > 0) {
@@ -189,6 +198,15 @@ const createNotesRoutes = (dbOperations) => {
         return res.status(400).json({
           success: false,
           message: 'Invalid note ID'
+        });
+      }
+      
+      // Handle empty or undefined body
+      if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: ['Request body is required and must be valid JSON']
         });
       }
       
