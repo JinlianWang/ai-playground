@@ -1,9 +1,6 @@
 const express = require('express');
+const { dbOperations } = require('../database');
 const router = express.Router();
-
-// In-memory storage for notes (will be replaced with SQLite in next step)
-let notes = [];
-let nextId = 1;
 
 // Validation helper
 const validateNote = (note) => {
@@ -29,125 +26,185 @@ const validateNote = (note) => {
 };
 
 // GET /api/notes - Get all notes
-router.get('/', (req, res) => {
-  res.json({
-    success: true,
-    data: notes,
-    count: notes.length
-  });
+router.get('/', async (req, res) => {
+  try {
+    const notes = await dbOperations.getAllNotes();
+    res.json({
+      success: true,
+      data: notes,
+      count: notes.length
+    });
+  } catch (error) {
+    console.error('Error getting notes:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
 });
 
 // GET /api/notes/:id - Get specific note
-router.get('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const note = notes.find(n => n.id === id);
-  
-  if (!note) {
-    return res.status(404).json({
+router.get('/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    
+    if (isNaN(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid note ID'
+      });
+    }
+    
+    const note = await dbOperations.getNoteById(id);
+    
+    if (!note) {
+      return res.status(404).json({
+        success: false,
+        message: 'Note not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: note
+    });
+  } catch (error) {
+    console.error('Error getting note:', error.message);
+    res.status(500).json({
       success: false,
-      message: 'Note not found'
+      message: 'Internal server error',
+      error: error.message
     });
   }
-  
-  res.json({
-    success: true,
-    data: note
-  });
 });
 
 // POST /api/notes - Create new note
-router.post('/', (req, res) => {
-  const { title, category, priority, description } = req.body;
-  
-  // Validate input
-  const validationErrors = validateNote(req.body);
-  if (validationErrors.length > 0) {
-    return res.status(400).json({
+router.post('/', async (req, res) => {
+  try {
+    // Validate input
+    const validationErrors = validateNote(req.body);
+    if (validationErrors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
+    
+    const { title, category, priority, description } = req.body;
+    
+    // Create new note in database
+    const newNote = await dbOperations.createNote({
+      title: title.trim(),
+      category,
+      priority,
+      description: description.trim()
+    });
+    
+    res.status(201).json({
+      success: true,
+      message: 'Note created successfully',
+      data: newNote
+    });
+  } catch (error) {
+    console.error('Error creating note:', error.message);
+    res.status(500).json({
       success: false,
-      message: 'Validation failed',
-      errors: validationErrors
+      message: 'Internal server error',
+      error: error.message
     });
   }
-  
-  // Create new note
-  const newNote = {
-    id: nextId++,
-    title: title.trim(),
-    category,
-    priority,
-    description: description.trim(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  notes.push(newNote);
-  
-  res.status(201).json({
-    success: true,
-    message: 'Note created successfully',
-    data: newNote
-  });
 });
 
 // PUT /api/notes/:id - Update note
-router.put('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const noteIndex = notes.findIndex(n => n.id === id);
-  
-  if (noteIndex === -1) {
-    return res.status(404).json({
+router.put('/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    
+    if (isNaN(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid note ID'
+      });
+    }
+    
+    // Validate input
+    const validationErrors = validateNote(req.body);
+    if (validationErrors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
+    
+    const { title, category, priority, description } = req.body;
+    
+    // Update note in database
+    const updatedNote = await dbOperations.updateNote(id, {
+      title: title.trim(),
+      category,
+      priority,
+      description: description.trim()
+    });
+    
+    if (!updatedNote) {
+      return res.status(404).json({
+        success: false,
+        message: 'Note not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Note updated successfully',
+      data: updatedNote
+    });
+  } catch (error) {
+    console.error('Error updating note:', error.message);
+    res.status(500).json({
       success: false,
-      message: 'Note not found'
+      message: 'Internal server error',
+      error: error.message
     });
   }
-  
-  // Validate input
-  const validationErrors = validateNote(req.body);
-  if (validationErrors.length > 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: validationErrors
-    });
-  }
-  
-  // Update note
-  const { title, category, priority, description } = req.body;
-  notes[noteIndex] = {
-    ...notes[noteIndex],
-    title: title.trim(),
-    category,
-    priority,
-    description: description.trim(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  res.json({
-    success: true,
-    message: 'Note updated successfully',
-    data: notes[noteIndex]
-  });
 });
 
 // DELETE /api/notes/:id - Delete note
-router.delete('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const noteIndex = notes.findIndex(n => n.id === id);
-  
-  if (noteIndex === -1) {
-    return res.status(404).json({
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    
+    if (isNaN(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid note ID'
+      });
+    }
+    
+    const deletedNote = await dbOperations.deleteNote(id);
+    
+    if (!deletedNote) {
+      return res.status(404).json({
+        success: false,
+        message: 'Note not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Note deleted successfully',
+      data: deletedNote
+    });
+  } catch (error) {
+    console.error('Error deleting note:', error.message);
+    res.status(500).json({
       success: false,
-      message: 'Note not found'
+      message: 'Internal server error',
+      error: error.message
     });
   }
-  
-  const deletedNote = notes.splice(noteIndex, 1)[0];
-  
-  res.json({
-    success: true,
-    message: 'Note deleted successfully',
-    data: deletedNote
-  });
 });
 
 module.exports = router;

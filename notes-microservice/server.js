@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const notesRoutes = require('./routes/notes');
+const { initializeDatabase } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -37,11 +38,25 @@ app.get('/', (req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Notes microservice running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
-  console.log(`API documentation: http://localhost:${PORT}/`);
-});
+// Initialize database and start server
+async function startServer() {
+  try {
+    // Initialize database
+    await initializeDatabase();
+    console.log('Database initialized successfully');
+    
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Notes microservice running on port ${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/health`);
+      console.log(`API documentation: http://localhost:${PORT}/`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error.message);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 module.exports = app;
