@@ -5,7 +5,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Development server with hot reload
+# Frontend Development
+npm run dev
+
+# Backend Development (Notes Microservice)
+cd notes-microservice
 npm run dev
 
 # Build for production
@@ -26,8 +30,8 @@ npm run preview
 
 ## Architecture Overview
 
-### Multi-Page React Application
-This is a React Router-based application with three main pages that share synchronized state through a lifted state pattern.
+### Full-Stack React Application
+This is a React Router-based application with three main pages that share synchronized state through a lifted state pattern, plus a complete Node.js backend microservice for notes management.
 
 ### State Management Pattern
 - **Centralized State**: The App component manages a single `count` value that serves as both counter and rating
@@ -38,7 +42,7 @@ This is a React Router-based application with three main pages that share synchr
 ### Routing Structure
 - `/counter` - CounterPage with increment button
 - `/rating` - RatingPage with 5-star rating component  
-- `/notes` - NotesPage with comprehensive form
+- `/notes` - NotesPage with complete notes management system (list, create, edit)
 - `/` - Redirects to `/counter`
 
 ### Key Architectural Decisions
@@ -51,13 +55,16 @@ This is a React Router-based application with three main pages that share synchr
 - **Pages Directory**: `/src/pages/` contains route-specific page components
   - `CounterPage.jsx` - Counter button implementation
   - `RatingPage.jsx` - Rating component integration
-  - `NotesPage.jsx` - Form page layout
+  - `NotesPage.jsx` - Three-view architecture managing list, create, and edit modes
 - **Components Directory**: `/src/components/` contains reusable components
   - `Navigation.jsx` - Fixed navigation bar with React Router NavLink components
   - `Rating.jsx` - 5-star rating component with interaction handling
-  - `NoteForm.jsx` - Comprehensive form with validation and modal
+  - `NoteForm.jsx` - Backend-integrated form with create/edit modes and validation
+  - `NotesList.jsx` - Notes list view with CRUD operations and Material-UI design
   - `TextInput.jsx`, `TextArea.jsx`, `Dropdown.jsx` - Reusable form components
   - `SubmitModal.jsx` - Confirmation modal for form submissions
+- **Services Directory**: `/src/services/` contains API integration layer
+  - `notesApi.js` - HTTP client for backend communication with comprehensive error handling
 
 ### Testing Architecture
 - **Vitest**: Configured with jsdom environment for React component testing
@@ -73,6 +80,15 @@ This is a React Router-based application with three main pages that share synchr
 - Navigation bar styling with active state management
 - Full viewport layout with background colors per page for visual distinction
 
+### Backend Microservice Architecture
+- **Node.js + Express.js**: RESTful API server on port 3001
+- **SQLite Database**: Lightweight, file-based persistent storage
+- **CRUD Operations**: Complete Create, Read, Update, Delete functionality
+- **Input Validation**: Server-side validation matching frontend requirements
+- **Error Handling**: Comprehensive error responses with proper HTTP status codes
+- **CORS Enabled**: Configured for frontend integration
+- **Testing Suite**: 107 tests covering all functionality and edge cases
+
 ## Important Implementation Notes
 
 ### localStorage Integration
@@ -83,6 +99,15 @@ When working with the counter or rating components, remember they share the same
 
 ### Page Layout
 All pages use fixed positioning to achieve full-screen experience. When adding new pages, follow the same pattern with proper z-index and padding for navigation clearance.
+
+### Notes Management Implementation
+The NotesPage implements a three-view architecture for complete notes management:
+- **List View**: Displays all notes with Material-UI cards, category/priority chips, and edit/delete menus
+- **Create View**: New note creation with form validation and backend integration
+- **Edit View**: Pre-populated form for editing existing notes with real-time updates
+- **State Management**: View transitions managed through local state with proper cleanup
+- **API Integration**: Direct backend calls through services layer with loading states and error handling
+- **User Experience**: Seamless navigation with back buttons, loading indicators, and comprehensive error messages
 
 ## Testing Best Practices
 

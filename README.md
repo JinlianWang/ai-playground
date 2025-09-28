@@ -1,6 +1,6 @@
 # Policy Portal
 
-A multi-page React application featuring a counter, rating system, and note-taking form with React Router navigation and localStorage persistence.
+A full-stack React application featuring a counter, rating system, and complete notes management system with React Router navigation, localStorage persistence, and Node.js backend integration.
 
 ## Quick Start
 
@@ -32,7 +32,7 @@ A multi-page React application featuring a counter, rating system, and note-taki
    
    # Terminal 2: Start the frontend (React App)
    npm run dev
-   # Frontend runs at: http://localhost:5173
+   # Frontend runs at: http://localhost:5174
    ```
 
 #### Option 2: Frontend Only
@@ -48,7 +48,7 @@ If you only want to run the frontend without the notes API:
    ```bash
    npm run dev
    ```
-   Opens at `http://localhost:5173`
+   Opens at `http://localhost:5174`
 
 ### Available Commands
 
@@ -74,7 +74,8 @@ src/
   ├── components/          # Reusable components with co-located tests
   │   ├── Navigation.jsx + Navigation.test.jsx
   │   ├── Rating.jsx + Rating.test.jsx
-  │   ├── NoteForm.jsx + NoteForm.test.jsx
+  │   ├── NoteForm.jsx + NoteForm.test.jsx    # Integrated with backend API
+  │   ├── NotesList.jsx                       # Notes list view with CRUD operations
   │   ├── TextInput.jsx + TextInput.test.jsx
   │   ├── TextArea.jsx + TextArea.test.jsx
   │   ├── Dropdown.jsx + Dropdown.test.jsx
@@ -83,6 +84,8 @@ src/
   │   ├── CounterPage.jsx + CounterPage.test.jsx
   │   ├── RatingPage.jsx + RatingPage.test.jsx
   │   └── NotesPage.jsx + NotesPage.test.jsx
+  ├── services/            # API service layer
+  │   └── notesApi.js      # HTTP client for notes backend integration
   └── assets/              # Static assets
 
 notes-microservice/        # Backend API service
@@ -123,7 +126,7 @@ notes-microservice/        # Backend API service
 ### 📊 Interactive Components
 - **Counter Page**: Interactive button that increments on click
 - **Rating Page**: 5-star rating system with hover effects
-- **Notes Page**: Comprehensive form with text inputs, dropdowns, and textarea
+- **Notes Page**: Complete notes management system with list view, create, edit, and delete operations
 
 ### 🔗 Synchronized State
 - **React Context** keeps counter and rating values in sync
@@ -147,7 +150,15 @@ notes-microservice/        # Backend API service
 - **Comprehensive test suite** with component and integration tests
 - **TypeScript-ready** with proper type checking
 
-### 🔌 Notes API Integration
+### 📝 Notes Management System
+- **Complete CRUD Interface** - List, create, edit, and delete notes with intuitive UI
+- **Three-View Architecture** - List view, form view, and edit mode with seamless transitions
+- **Real-time Validation** - Client-side and server-side validation with error display
+- **Loading States** - Comprehensive loading indicators and error handling
+- **Material-UI Design** - Consistent styling with responsive layout and accessibility
+- **Backend Integration** - Direct API calls replacing modal-based submissions
+
+### 🔌 Backend API Integration  
 - **RESTful API** for persistent note storage
 - **CRUD Operations** - Create, Read, Update, Delete notes
 - **SQLite Database** - Lightweight, file-based persistence
@@ -217,12 +228,15 @@ The application features three main pages accessible via the top navigation bar:
 - Set a rating on the Rating page and return to Counter to see the updated value
 - All values automatically persist across browser sessions
 
-### Note Creation
-- Fill out the comprehensive form on the Notes page
-- Required fields: Title, Category, Priority, Description
-- **With Backend**: Notes are saved to SQLite database via API
-- **Frontend Only**: Submit shows confirmation modal and resets form
-- Form validates all fields before submission
+### Notes Management
+- **List View**: Browse all your saved notes with category and priority indicators
+- **Create Notes**: Click "Add Note" to access the comprehensive creation form
+- **Edit Notes**: Click the menu icon (⋮) on any note to edit with pre-populated data
+- **Delete Notes**: Remove notes via the menu with proper error handling
+- **Required fields**: Title, Category, Priority, Description
+- **Real-time Validation**: Form validates all fields with immediate feedback
+- **Backend Integration**: All operations save to SQLite database via RESTful API
+- **Error Handling**: Network errors and validation errors displayed to user
 
 ## Architecture
 
@@ -240,8 +254,14 @@ The application features three main pages accessible via the top navigation bar:
 - **Component Directory** (`/src/components/`): Reusable UI components with co-located tests
   - Form components (TextInput, TextArea, Dropdown)
   - Interactive components (Rating, SubmitModal)
+  - Notes components (NoteForm with backend integration, NotesList with CRUD operations)
   - Layout components (Navigation)
+- **Services Directory** (`/src/services/`): API integration layer
+  - HTTP client functions for backend communication
+  - Error handling and validation utilities
+  - Centralized API configuration
 - **Page Directory** (`/src/pages/`): Route-specific page components with dedicated tests
   - Each page handles specific functionality while sharing common state
+  - NotesPage manages three-view architecture (list, create, edit)
 - **Test Co-location**: Each component paired with its test file for maintainability
-- **Separation of Concerns**: Clear distinction between reusable components and page-specific logic
+- **Separation of Concerns**: Clear distinction between reusable components, API layer, and page-specific logic
