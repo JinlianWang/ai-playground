@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { MemoryRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Box } from '@mui/material'
@@ -73,10 +73,14 @@ describe('App Integration Tests', () => {
       expect(screen.getAllByLabelText(/Rate \d+ stars?/)).toHaveLength(5)
     })
 
-    it('renders notes page correctly', () => {
+    it('renders notes page correctly', async () => {
       renderWithRoute('/notes')
       expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument()
-      expect(screen.getByText('Create Note')).toBeInTheDocument()
+      
+      // Wait for notes list to load and display Add Note button
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Add Note' })).toBeInTheDocument()
+      })
     })
   })
 
@@ -119,7 +123,7 @@ describe('App Integration Tests', () => {
       expect(screen.getByText(/count is 3/)).toBeInTheDocument()
     })
 
-    it('preserves state across full navigation cycle', () => {
+    it('preserves state across full navigation cycle', async () => {
       renderWithRoute('/counter')
 
       fireEvent.click(screen.getByText(/count is 0/))
@@ -128,7 +132,11 @@ describe('App Integration Tests', () => {
       fireEvent.click(screen.getByLabelText('Rate 4 stars'))
 
       fireEvent.click(screen.getByRole('link', { name: 'Notes' }))
-      expect(screen.getByText('Create Note')).toBeInTheDocument()
+      
+      // Wait for notes list to load and display Add Note button
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Add Note' })).toBeInTheDocument()
+      })
 
       fireEvent.click(screen.getByRole('link', { name: 'Counter' }))
       expect(screen.getByText(/count is 4/)).toBeInTheDocument()

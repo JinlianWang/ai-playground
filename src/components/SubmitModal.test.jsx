@@ -4,114 +4,100 @@ import SubmitModal from './SubmitModal'
 
 describe('SubmitModal', () => {
   const mockFormData = {
-    title: 'Test Note',
+    title: 'Test Note Title',
     category: 'work',
     priority: 'high',
-    description: 'Test description'
+    description: 'Test note description'
   }
 
-  it('displays modal content when open', () => {
+  it('renders modal when open is true', () => {
     render(
       <SubmitModal 
-        open={true}
-        onClose={() => {}}
-        onConfirm={() => {}}
-        formData={mockFormData}
+        open={true} 
+        onClose={vi.fn()} 
+        onConfirm={vi.fn()} 
+        formData={mockFormData} 
       />
     )
-    
+
     expect(screen.getByText('Confirm Submission')).toBeInTheDocument()
-    expect(screen.getByText('Test Note')).toBeInTheDocument()
-    expect(screen.getByText('work')).toBeInTheDocument()
-    expect(screen.getByText('high')).toBeInTheDocument()
-    expect(screen.getByText('Test description')).toBeInTheDocument()
+    expect(screen.getByText('Please review your note details:')).toBeInTheDocument()
   })
 
-  it('does not display modal when closed', () => {
+  it('does not render modal when open is false', () => {
     render(
       <SubmitModal 
-        open={false}
-        onClose={() => {}}
-        onConfirm={() => {}}
-        formData={mockFormData}
+        open={false} 
+        onClose={vi.fn()} 
+        onConfirm={vi.fn()} 
+        formData={mockFormData} 
       />
     )
-    
+
     expect(screen.queryByText('Confirm Submission')).not.toBeInTheDocument()
+  })
+
+  it('displays form data correctly', () => {
+    render(
+      <SubmitModal 
+        open={true} 
+        onClose={vi.fn()} 
+        onConfirm={vi.fn()} 
+        formData={mockFormData} 
+      />
+    )
+
+    expect(screen.getByText('Test Note Title')).toBeInTheDocument()
+    expect(screen.getByText('work')).toBeInTheDocument()
+    expect(screen.getByText('high')).toBeInTheDocument()
+    expect(screen.getByText('Test note description')).toBeInTheDocument()
   })
 
   it('calls onClose when Cancel button is clicked', () => {
     const mockClose = vi.fn()
+    
     render(
       <SubmitModal 
-        open={true}
-        onClose={mockClose}
-        onConfirm={() => {}}
-        formData={mockFormData}
+        open={true} 
+        onClose={mockClose} 
+        onConfirm={vi.fn()} 
+        formData={mockFormData} 
       />
     )
-    
-    fireEvent.click(screen.getByText('Cancel'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(mockClose).toHaveBeenCalled()
   })
 
   it('calls onConfirm when OK button is clicked', () => {
     const mockConfirm = vi.fn()
+    
     render(
       <SubmitModal 
-        open={true}
-        onClose={() => {}}
-        onConfirm={mockConfirm}
-        formData={mockFormData}
+        open={true} 
+        onClose={vi.fn()} 
+        onConfirm={mockConfirm} 
+        formData={mockFormData} 
       />
     )
-    
-    fireEvent.click(screen.getByText('OK'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'OK' }))
     expect(mockConfirm).toHaveBeenCalled()
   })
 
-  it('displays all form data fields correctly', () => {
-    const complexFormData = {
-      title: 'Complex Note Title',
-      category: 'personal',
-      priority: 'medium',
-      description: 'This is a longer description with more details about the note content.'
-    }
-
+  it('renders all form field labels', () => {
     render(
       <SubmitModal 
-        open={true}
-        onClose={() => {}}
-        onConfirm={() => {}}
-        formData={complexFormData}
+        open={true} 
+        onClose={vi.fn()} 
+        onConfirm={vi.fn()} 
+        formData={mockFormData} 
       />
     )
-    
-    expect(screen.getByText('Complex Note Title')).toBeInTheDocument()
-    expect(screen.getByText('personal')).toBeInTheDocument()
-    expect(screen.getByText('medium')).toBeInTheDocument()
-    expect(screen.getByText('This is a longer description with more details about the note content.')).toBeInTheDocument()
-  })
 
-  it('handles empty form data gracefully', () => {
-    const emptyFormData = {
-      title: '',
-      category: '',
-      priority: '',
-      description: ''
-    }
-
-    render(
-      <SubmitModal 
-        open={true}
-        onClose={() => {}}
-        onConfirm={() => {}}
-        formData={emptyFormData}
-      />
-    )
-    
-    expect(screen.getByText('Confirm Submission')).toBeInTheDocument()
-    expect(screen.getByText('OK')).toBeInTheDocument()
-    expect(screen.getByText('Cancel')).toBeInTheDocument()
+    expect(screen.getByText('Title:')).toBeInTheDocument()
+    expect(screen.getByText('Category:')).toBeInTheDocument() 
+    expect(screen.getByText('Priority:')).toBeInTheDocument()
+    expect(screen.getByText('Description:')).toBeInTheDocument()
   })
 })

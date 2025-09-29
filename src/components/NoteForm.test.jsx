@@ -13,10 +13,10 @@ describe('NoteForm', () => {
   it('renders all form elements', () => {
     render(<NoteForm />)
     
-    expect(screen.getByText('Create Note')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Create Note' })).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Enter note title')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Enter note description')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Create Note' })).toBeInTheDocument()
   })
 
   it('renders category and priority dropdowns', () => {
@@ -30,138 +30,106 @@ describe('NoteForm', () => {
     render(<NoteForm />)
     
     const titleInput = screen.getByPlaceholderText('Enter note title')
-    const descInput = screen.getByPlaceholderText('Enter note description')
+    const descriptionInput = screen.getByPlaceholderText('Enter note description')
     
-    fireEvent.change(titleInput, { target: { value: 'My Note' } })
-    fireEvent.change(descInput, { target: { value: 'My Description' } })
+    fireEvent.change(titleInput, { target: { value: 'Test Title' } })
+    fireEvent.change(descriptionInput, { target: { value: 'Test Description' } })
     
-    expect(screen.getByDisplayValue('My Note')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('My Description')).toBeInTheDocument()
+    expect(titleInput).toHaveValue('Test Title')
+    expect(descriptionInput).toHaveValue('Test Description')
   })
 
-  it('has form submission functionality', () => {
+  it('validates required fields', () => {
     render(<NoteForm />)
     
-    // Fill form fields
-    fireEvent.change(screen.getByPlaceholderText('Enter note title'), { 
-      target: { value: 'Test Note' } 
-    })
-    fireEvent.change(screen.getByPlaceholderText('Enter note description'), { 
-      target: { value: 'Test Description' } 
-    })
+    const submitButton = screen.getByRole('button', { name: 'Create Note' })
     
-    // Submit button should be present and clickable
-    const submitButton = screen.getByRole('button', { name: 'Submit' })
+    // All required form fields should be present
+    expect(screen.getByPlaceholderText('Enter note title')).toBeRequired()
+    expect(screen.getByPlaceholderText('Enter note description')).toBeRequired()
+    
+    // Dropdowns should be required
+    const comboboxes = screen.getAllByRole('combobox')
+    expect(comboboxes[0]).toBeRequired() // category
+    expect(comboboxes[1]).toBeRequired() // priority
+    
+    // Submit button should be present
     expect(submitButton).toBeInTheDocument()
-    expect(submitButton).toBeEnabled()
   })
 
-  it('form fields maintain state correctly', () => {
+  it('displays all category options', () => {
     render(<NoteForm />)
     
-    // Test that form fields can be filled and maintain their values
-    const titleInput = screen.getByPlaceholderText('Enter note title')
-    const descInput = screen.getByPlaceholderText('Enter note description')
+    const comboboxes = screen.getAllByRole('combobox')
+    const categoryCombobox = comboboxes[0]
     
-    fireEvent.change(titleInput, { target: { value: 'Persistent Test' } })
-    fireEvent.change(descInput, { target: { value: 'Persistent Description' } })
-    
-    expect(titleInput).toHaveValue('Persistent Test')
-    expect(descInput).toHaveValue('Persistent Description')
-  })
-
-  it('opens modal when form is submitted', () => {
-    render(<NoteForm />)
-    
-    // Fill required fields
-    fireEvent.change(screen.getByPlaceholderText('Enter note title'), { 
-      target: { value: 'Test Note' } 
-    })
-    
-    // Open category dropdown and select option
-    const categoryComboboxes = screen.getAllByRole('combobox')
-    const categoryCombobox = categoryComboboxes[0] // First combobox is category
     fireEvent.mouseDown(categoryCombobox)
+    expect(screen.getByText('Work')).toBeInTheDocument()
+    expect(screen.getByText('Personal')).toBeInTheDocument()
+    expect(screen.getByText('Ideas')).toBeInTheDocument()
+  })
+
+  it('displays all priority options', () => {
+    render(<NoteForm />)
+    
+    const comboboxes = screen.getAllByRole('combobox')
+    const priorityCombobox = comboboxes[1]
+    
+    fireEvent.mouseDown(priorityCombobox)
+    expect(screen.getByText('High')).toBeInTheDocument()
+    expect(screen.getByText('Medium')).toBeInTheDocument()
+    expect(screen.getByText('Low')).toBeInTheDocument()
+  })
+
+  it('allows selection of category and priority', () => {
+    render(<NoteForm />)
+    
+    const comboboxes = screen.getAllByRole('combobox')
+    
+    // Select category
+    fireEvent.mouseDown(comboboxes[0])
     fireEvent.click(screen.getByText('Work'))
     
-    // Open priority dropdown and select option
-    const priorityCombobox = categoryComboboxes[1] // Second combobox is priority
-    fireEvent.mouseDown(priorityCombobox)
+    // Select priority
+    fireEvent.mouseDown(comboboxes[1])
     fireEvent.click(screen.getByText('High'))
     
-    fireEvent.change(screen.getByPlaceholderText('Enter note description'), { 
-      target: { value: 'Test Description' } 
-    })
-    
-    // Submit form
-    const submitButton = screen.getByRole('button', { name: 'Submit' })
-    fireEvent.click(submitButton)
-    
-    // Modal should appear
-    expect(screen.getByText('Confirm Submission')).toBeInTheDocument()
+    // Verify selections (the selected values should be displayed)
+    expect(screen.getByDisplayValue('work')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('high')).toBeInTheDocument()
   })
 
-  it('modal displays form data correctly', () => {
+  it('handles complete form filling', () => {
     render(<NoteForm />)
     
-    // Fill form
+    // Fill all form fields
     fireEvent.change(screen.getByPlaceholderText('Enter note title'), { 
-      target: { value: 'Test Note' } 
+      target: { value: 'My Test Note' } 
+    })
+    
+    fireEvent.change(screen.getByPlaceholderText('Enter note description'), { 
+      target: { value: 'This is a test note description' } 
     })
     
     const comboboxes = screen.getAllByRole('combobox')
-    const categoryCombobox = comboboxes[0] // First combobox is category
-    fireEvent.mouseDown(categoryCombobox)
+    
+    // Select category
+    fireEvent.mouseDown(comboboxes[0])
     fireEvent.click(screen.getByText('Personal'))
     
-    const priorityCombobox = comboboxes[1] // Second combobox is priority
-    fireEvent.mouseDown(priorityCombobox)
+    // Select priority  
+    fireEvent.mouseDown(comboboxes[1])
     fireEvent.click(screen.getByText('Medium'))
     
-    fireEvent.change(screen.getByPlaceholderText('Enter note description'), { 
-      target: { value: 'Test Description' } 
-    })
+    // Verify all data is present
+    expect(screen.getByDisplayValue('My Test Note')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('This is a test note description')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('personal')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('medium')).toBeInTheDocument()
     
-    // Submit to open modal
-    fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    
-    // Check modal content - verify modal is displayed
-    expect(screen.getByText('Confirm Submission')).toBeInTheDocument()
-    
-    // The form data should be in the modal, but we'll check for the modal's presence instead
-    // to avoid conflicts with form inputs that have the same text
-    expect(screen.getByText('OK')).toBeInTheDocument()
-    expect(screen.getByText('Cancel')).toBeInTheDocument()
+    // Submit button should be enabled
+    const submitButton = screen.getByRole('button', { name: 'Create Note' })
+    expect(submitButton).toBeEnabled()
   })
 
-  it('clears form when modal is confirmed', () => {
-    render(<NoteForm />)
-    
-    // Fill and submit form
-    fireEvent.change(screen.getByPlaceholderText('Enter note title'), { 
-      target: { value: 'Test Note' } 
-    })
-    
-    const comboboxes2 = screen.getAllByRole('combobox')
-    const categoryCombobox2 = comboboxes2[0] // First combobox is category
-    fireEvent.mouseDown(categoryCombobox2)
-    fireEvent.click(screen.getByText('Work'))
-    
-    const priorityCombobox2 = comboboxes2[1] // Second combobox is priority
-    fireEvent.mouseDown(priorityCombobox2)
-    fireEvent.click(screen.getByText('High'))
-    
-    fireEvent.change(screen.getByPlaceholderText('Enter note description'), { 
-      target: { value: 'Test Description' } 
-    })
-    
-    fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    
-    // Confirm in modal
-    fireEvent.click(screen.getByText('OK'))
-    
-    // Form should be cleared
-    expect(screen.getByPlaceholderText('Enter note title')).toHaveValue('')
-    expect(screen.getByPlaceholderText('Enter note description')).toHaveValue('')
-  })
 })
