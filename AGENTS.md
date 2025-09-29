@@ -1,13 +1,13 @@
 # AGENTS.md
 
-Guidance for GPT-based coding agents maintaining the Policy Portal full-stack application.
+Guidance for GPT-based coding agents maintaining the AI Playground full-stack application.
 
 ## Project Snapshot
 - Multi-page React 19.1 frontend bootstrapped with Vite 7.
 - Express 5 + SQLite notes microservice lives in `notes-microservice` and runs on port 3001.
 - React Router DOM 7 powers `/counter`, `/rating`, `/notes`, with `/` redirecting to `/counter`.
 - Material UI 7 (plus `@mui/icons-material`) provides layout and icons; `Navigation.jsx` is a fixed AppBar rendered on every route.
-- Shared `CountProvider` (`src/context/CountContext.jsx`) persists the global count via `localStorage` key `policy-portal-count`.
+- Shared `CountProvider` (`src/context/CountContext.jsx`) persists the global count via `localStorage` key `ai-playground-count`.
 
 ## Dev Workflow
 ```bash

@@ -46,7 +46,7 @@ describe('App Integration Tests', () => {
 
     it('renders navigation bar on all pages', () => {
       renderWithRoute('/counter')
-      expect(screen.getByText('Policy Portal')).toBeInTheDocument()
+      expect(screen.getByText('AI Playground')).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Counter' })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Rating' })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Notes' })).toBeInTheDocument()

@@ -1,4 +1,4 @@
-# Policy Portal
+# AI Playground
 
 A full-stack React application featuring a counter, rating system, and complete notes management system with React Router navigation, localStorage persistence, and Node.js backend integration.
 

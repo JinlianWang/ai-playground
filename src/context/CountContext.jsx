@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
-export const STORAGE_KEY = 'policy-portal-count'
+export const STORAGE_KEY = 'ai-playground-count'
 
 const CountContext = createContext()
 

@@ -36,7 +36,7 @@ This is a React Router-based application with three main pages that share synchr
 ### State Management Pattern
 - **Centralized State**: The App component manages a single `count` value that serves as both counter and rating
 - **Shared State**: Counter increments and rating selections update the same state value
-- **localStorage Persistence**: State automatically persists across browser sessions using the key `'policy-portal-count'`
+- **localStorage Persistence**: State automatically persists across browser sessions using the key `'ai-playground-count'`
 - **Props Down**: State and handlers are passed down to page components, not managed locally
 
 ### Routing Structure

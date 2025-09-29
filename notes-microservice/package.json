@@ -1,7 +1,7 @@
 {
-  "name": "notes-microservice",
+  "name": "playground-microservice",
   "version": "1.0.0",
-  "description": "A Node.js microservice for managing notes with SQLite and Express",
+  "description": "A Node.js microservice for managing notes in the AI Playground with SQLite and Express",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

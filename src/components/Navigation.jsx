@@ -12,7 +12,7 @@ function Navigation() {
     <AppBar position="fixed" sx={{ zIndex: 1200 }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Policy Portal
+          AI Playground
         </Typography>
         <Box sx={{ 
           display: 'flex', 

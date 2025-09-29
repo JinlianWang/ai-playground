@@ -1,4 +1,4 @@
-# Policy Portal Tech Stack & Architecture Critique
+# AI Playground Tech Stack & Architecture Critique
 
 ## Frontend
 

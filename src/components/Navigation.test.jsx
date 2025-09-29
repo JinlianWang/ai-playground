@@ -13,10 +13,10 @@ const renderNavigation = (initialRoute = '/') => {
 }
 
 describe('Navigation', () => {
-  it('renders the Policy Portal title', () => {
+  it('renders the AI Playground title', () => {
     renderNavigation()
     
-    expect(screen.getByText('Policy Portal')).toBeInTheDocument()
+    expect(screen.getByText('AI Playground')).toBeInTheDocument()
   })
 
   it('renders all navigation links', () => {
