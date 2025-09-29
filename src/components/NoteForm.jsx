@@ -19,6 +19,24 @@ const NoteForm = ({ editingNoteId, onNoteSubmitted, onCancel }) => {
 
   // Load note data if editing
   useEffect(() => {
+    const loadNoteForEditing = async () => {
+      try {
+        setIsLoadingNote(true)
+        setError(null)
+        const note = await getNoteById(editingNoteId)
+        setFormData({
+          title: note.title,
+          category: note.category,
+          priority: note.priority,
+          description: note.description
+        })
+      } catch (err) {
+        setError(err instanceof NotesApiError ? err.message : 'Failed to load note for editing')
+      } finally {
+        setIsLoadingNote(false)
+      }
+    }
+
     if (editingNoteId) {
       loadNoteForEditing()
     } else {
@@ -31,24 +49,6 @@ const NoteForm = ({ editingNoteId, onNoteSubmitted, onCancel }) => {
       })
     }
   }, [editingNoteId])
-
-  const loadNoteForEditing = async () => {
-    try {
-      setIsLoadingNote(true)
-      setError(null)
-      const note = await getNoteById(editingNoteId)
-      setFormData({
-        title: note.title,
-        category: note.category,
-        priority: note.priority,
-        description: note.description
-      })
-    } catch (err) {
-      setError(err instanceof NotesApiError ? err.message : 'Failed to load note for editing')
-    } finally {
-      setIsLoadingNote(false)
-    }
-  }
 
   const handleInputChange = (field) => (event) => {
     setFormData({

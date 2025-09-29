@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useEffect, useMemo, useState } from 'react'
+import { STORAGE_KEY } from '../constants'
 
-export const STORAGE_KEY = 'ai-playground-count'
-
-const CountContext = createContext()
+export const CountContext = createContext()
 
 export function CountProvider({ children, initialCount }) {
   const [count, setCount] = useState(() => {
@@ -36,14 +36,4 @@ export function CountProvider({ children, initialCount }) {
   )
 
   return <CountContext.Provider value={value}>{children}</CountContext.Provider>
-}
-
-export function useCount() {
-  const context = useContext(CountContext)
-
-  if (!context) {
-    throw new Error('useCount must be used within a CountProvider')
-  }
-
-  return context
 }

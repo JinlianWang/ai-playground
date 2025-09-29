@@ -41,7 +41,7 @@ async function apiRequest(url, options = {}) {
     let data;
     try {
       data = await response.json();
-    } catch (parseError) {
+    } catch {
       throw new NotesApiError(
         'Invalid JSON response from server',
         response.status,
@@ -194,7 +194,7 @@ export async function checkServiceHealth() {
   try {
     const response = await apiRequest(`${API_BASE_URL}/health`);
     return response.status === 'OK';
-  } catch (error) {
+  } catch {
     return false;
   }
 }

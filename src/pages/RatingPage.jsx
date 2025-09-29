@@ -1,6 +1,6 @@
 import { Typography, Box } from '@mui/material'
 import Rating from '../components/Rating'
-import { useCount } from '../context/CountContext'
+import { useCount } from '../hooks/useCount'
 
 function RatingPage() {
   const { count, setCountFromRating } = useCount()

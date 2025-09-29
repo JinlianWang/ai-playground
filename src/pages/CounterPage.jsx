@@ -1,5 +1,5 @@
 import { Button, Typography, Box } from '@mui/material'
-import { useCount } from '../context/CountContext'
+import { useCount } from '../hooks/useCount'
 
 function CounterPage() {
   const { count, incrementCount } = useCount()

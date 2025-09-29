@@ -6,7 +6,8 @@ import Navigation from './components/Navigation'
 import CounterPage from './pages/CounterPage'
 import RatingPage from './pages/RatingPage'
 import NotesPage from './pages/NotesPage'
-import { CountProvider, STORAGE_KEY } from './context/CountContext'
+import { CountProvider } from './context/CountContext'
+import { STORAGE_KEY } from './constants'
 
 function TestApp() {
   return (
