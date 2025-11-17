@@ -5,8 +5,12 @@
  * All functions handle HTTP requests, error handling, and data transformation.
  */
 
-// Base URL for the notes microservice
-const API_BASE_URL = 'http://localhost:3001';
+// Base URL for the notes microservice (empty string defaults to same origin/proxy)
+const API_BASE_URL = (import.meta.env.VITE_NOTES_API_BASE_URL ?? '').replace(/\/$/, '');
+
+function buildUrl(path) {
+  return `${API_BASE_URL}${path}`;
+}
 
 /**
  * Custom error class for API-related errors
@@ -90,7 +94,7 @@ async function apiRequest(url, options = {}) {
  * console.log(notes); // [{ id: 1, title: "My Note", ... }, ...]
  */
 export async function getAllNotes() {
-  const response = await apiRequest(`${API_BASE_URL}/api/notes`);
+  const response = await apiRequest(buildUrl('/api/notes'));
   return response.data || [];
 }
 
@@ -105,7 +109,7 @@ export async function getAllNotes() {
  * console.log(note.title); // "My Note"
  */
 export async function getNoteById(id) {
-  const response = await apiRequest(`${API_BASE_URL}/api/notes/${id}`);
+  const response = await apiRequest(buildUrl(`/api/notes/${id}`));
   return response.data;
 }
 
@@ -129,7 +133,7 @@ export async function getNoteById(id) {
  * console.log(newNote.id); // 123
  */
 export async function createNote(noteData) {
-  const response = await apiRequest(`${API_BASE_URL}/api/notes`, {
+  const response = await apiRequest(buildUrl('/api/notes'), {
     method: 'POST',
     body: JSON.stringify(noteData),
   });
@@ -156,7 +160,7 @@ export async function createNote(noteData) {
  * });
  */
 export async function updateNote(id, noteData) {
-  const response = await apiRequest(`${API_BASE_URL}/api/notes/${id}`, {
+  const response = await apiRequest(buildUrl(`/api/notes/${id}`), {
     method: 'PUT',
     body: JSON.stringify(noteData),
   });
@@ -174,7 +178,7 @@ export async function updateNote(id, noteData) {
  * console.log(`Deleted note: ${deletedNote.title}`);
  */
 export async function deleteNote(id) {
-  const response = await apiRequest(`${API_BASE_URL}/api/notes/${id}`, {
+  const response = await apiRequest(buildUrl(`/api/notes/${id}`), {
     method: 'DELETE',
   });
   return response.data;
@@ -192,7 +196,7 @@ export async function deleteNote(id) {
  */
 export async function checkServiceHealth() {
   try {
-    const response = await apiRequest(`${API_BASE_URL}/health`);
+    const response = await apiRequest(buildUrl('/health'));
     return response.status === 'OK';
   } catch {
     return false;
